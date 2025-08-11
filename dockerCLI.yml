@@ -23,4 +23,4 @@ docker_cli_commands:
   - docker network ls: "แสดงรายการ networks" #  [oai_citation:34‡phoenixNAP | Global IT Services](https://phoenixnap.com/kb/docker-commands-cheat-sheet?utm_source=chatgpt.com)
   - docker volume ls: "แสดงรายการ volumes" #  [oai_citation:35‡albertarakelyan.com](https://www.albertarakelyan.com/resources/books/Docker-Cheatsheet.pdf?utm_source=chatgpt.com)
 
- - docker build -t <image_name>:<tag> .: "สร้าง Docker image จาก Dockerfile ในโฟลเดอร์ปัจจุบัน" #  [oai_citation:10‡albertarakelyan.com](https://www.albertarakelyan.com/resources/books/Docker-Cheatsheet.pdf?utm_source=chatgpt.com) [oai_citation:11‡Docker Documentation](https://docs.docker.com/get-started/docker_cheatsheet.pdf?utm_source=chatgpt.com)
+  - docker build -t <image_name>:<tag> .: "สร้าง Docker image จาก Dockerfile ในโฟลเดอร์ปัจจุบัน" #  [oai_citation:10‡albertarakelyan.com](https://www.albertarakelyan.com/resources/books/Docker-Cheatsheet.pdf?utm_source=chatgpt.com) [oai_citation:11‡Docker Documentation](https://docs.docker.com/get-started/docker_cheatsheet.pdf?utm_source=chatgpt.com)
