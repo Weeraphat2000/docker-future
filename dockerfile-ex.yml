@@ -1,0 +1,58 @@
+dockerfile_instructions:
+  - FROM: "ระบุ base image ที่จะใช้ (จำเป็นต้องมีใน Dockerfile ทุกฉบับ)" #  [oai_citation:36‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - ARG: "กำหนดตัวแปร build-time" #  [oai_citation:37‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - RUN: "รันคำสั่งภายใน image ในช่วง build" #  [oai_citation:38‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - CMD: "กำหนดคำสั่งดีฟอลต์ให้ container รันเมื่อเริ่ม (มีได้แค่หนึ่งครั้ง)" #  [oai_citation:39‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:40‡kapeli.com](https://kapeli.com/cheat_sheets/Dockerfile.docset/Contents/Resources/Documents/index?utm_source=chatgpt.com)
+  - LABEL: "เพิ่ม metadata ให้กับ image" #  [oai_citation:41‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:42‡kapeli.com](https://kapeli.com/cheat_sheets/Dockerfile.docset/Contents/Resources/Documents/index?utm_source=chatgpt.com)
+  - EXPOSE: "ประกาศว่าคอนเทนเนอร์ฟัง port ไหน (แต่ไม่ได้เปิดให้ host โดยตรง)" #  [oai_citation:43‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:44‡kapeli.com](https://kapeli.com/cheat_sheets/Dockerfile.docset/Contents/Resources/Documents/index?utm_source=chatgpt.com)
+  - ENV: "กำหนด environment variables ภายใน image" #  [oai_citation:45‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:46‡kapeli.com](https://kapeli.com/cheat_sheets/Dockerfile.docset/Contents/Resources/Documents/index?utm_source=chatgpt.com)
+  - ADD: "คล้าย COPY แต่เพิ่มความสามารถดึงไฟล์จาก URL หรือ unpack archive" #  [oai_citation:47‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - COPY: "คัดลอกไฟล์จาก host ไปใน image" #  [oai_citation:48‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:49‡microservices.anjikeesari.com](https://microservices.anjikeesari.com/appendix/dockerfile-cheat-sheet/?utm_source=chatgpt.com)
+  - ENTRYPOINT: "กำหนด executable ให้ container รันเสมอ" #  [oai_citation:50‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - VOLUME: "สร้างจุดเชื่อมต่อกับ volume สำหรับ persistent data" #  [oai_citation:51‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - WORKDIR: "กำหนด working directory สำหรับคำสั่งถัดไป" #  [oai_citation:52‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - USER: "กำหนด user หรือ uid ที่ container จะใช้รันคำสั่งต่อไป" #  [oai_citation:53‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:54‡microservices.anjikeesari.com](https://microservices.anjikeesari.com/appendix/dockerfile-cheat-sheet/?utm_source=chatgpt.com)
+  - HEALTHCHECK: "ตรวจสอบสถานะสุขภาพของ container" #  [oai_citation:55‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - ONBUILD: "คำสั่งที่จะทำงานเมื่อ image นี้ทำหน้าที่เป็น base image" #  [oai_citation:56‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - STOPSIGNAL: "ระบุ signal ที่ใช้หยุด container เช่น SIGTERM" #  [oai_citation:57‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+  - SHELL: "กำหนด shell ที่ใช้รันคำสั่งใน RUN" #  [oai_citation:58‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com) [oai_citation:59‡Gist](https://gist.github.com/MarwanAlsoltany/f5f76235784a33ed81de758b8ad77889?utm_source=chatgpt.com)
+  - MAINTAINER: "ระบุผู้สร้าง image (แบบเก่า, ปัจจุบันควรใช้ LABEL แทน)" #  [oai_citation:60‡Docker Documentation](https://docs.docker.com/reference/dockerfile/?utm_source=chatgpt.com)
+
+
+
+# EXAMPLE
+
+# 1. ใช้ base image Node.js บน Alpine Linux (ขนาดเล็ก)
+FROM node:18-alpine
+
+# 2. กำหนด working directory ใน container
+WORKDIR /app
+
+# 3. คัดลอกไฟล์ package.json และ package-lock.json (ถ้ามี) ไปที่ working directory
+COPY package*.json ./
+
+# 4. ติดตั้ง dependencies (สำหรับ production)
+RUN npm ci --only=production
+
+# 5. คัดลอกโค้ดทั้งหมดจากโฟลเดอร์ปัจจุบันไปยัง container
+COPY . .
+
+# 6. เปิด port ที่แอปจะใช้ (เช่น 3000)
+EXPOSE 3000
+
+# 7. กำหนด environment variable (ถ้ามี)
+ENV NODE_ENV=production
+
+# 8. กำหนดคำสั่งเริ่มต้น container (รันแอป)
+CMD ["node", "index.js"]
+
+# -- ตัวเลือกเสริมที่อาจใช้ --
+# 9. คำสั่ง RUN สำหรับติดตั้งโปรแกรมอื่น ๆ (ถ้าต้องการ)
+# RUN apk add --no-cache git
+
+# 10. คำสั่ง ENTRYPOINT (ใช้ร่วมกับ CMD เพื่อกำหนด entrypoint script)
+# ENTRYPOINT ["sh", "-c"]
+
+# 11. คำสั่ง USER เพื่อเปลี่ยน user รันแอป (เพื่อความปลอดภัย)
+# RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# USER appuser

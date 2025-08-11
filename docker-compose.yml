@@ -1,0 +1,78 @@
+# version: "ระบุเวอร์ชันของ Compose file format"
+# services:
+#   # ตัวอย่างเชิงโครงสร้าง: แต่ละบริการ (service) สามารถกำหนดในรูปแบบเดียวกัน
+#   <service_name>: # ชื่อบริการ
+#     image: "ใช้ image ที่มีอยู่ (เช่น nginx:latest)"
+#     build: "สร้าง image ด้วย Dockerfile (context, dockerfile, args)"
+#     command: "คำสั่งที่รันแทน CMD จาก Dockerfile"
+#     ports: "แมป port ระหว่าง host และ container"
+#     expose: "เปิด port ให้ใช้ภายใน network เท่านั้น"
+#     depends_on: "ระบุบริการที่ต้องเริ่มก่อน"
+#     environment: "กำหนด environment variables"
+#     env_file: "ดึง environment variables จากไฟล์"
+#     volumes: "ผูก volume หรือ path จาก host ไป container"
+#     restart: "นโยบาย restart (e.g. always, on-failure)"
+#     healthcheck: "ตรวจสอบสถานะของ service"
+# volumes: "ประกาศ named volumes ที่ใช้ร่วมกัน"
+# networks: "กำหนดเครือข่ายเฉพาะ"
+# configs: "จัดการ config ใน Docker Swarm หรือ Compose"
+# secrets: "จัดการข้อมูลลับแบบปลอดภัย"
+
+# EXAMPLES
+version: "3.9" # เวอร์ชัน Compose file format
+
+services:
+  app: # ชื่อ service
+    build:
+      context: . # สร้าง image จาก Dockerfile ในโฟลเดอร์ปัจจุบัน
+      dockerfile: Dockerfile # ชื่อไฟล์ Dockerfile (ถ้าใช้ชื่อปกติไม่ต้องระบุ)
+      args:
+        APP_ENV: production # ตัวแปร build-time ส่งเข้า Dockerfile
+    command: ["python", "app.py"] # รันคำสั่งนี้แทน CMD ใน Dockerfile
+    ports:
+      - "5001:5000" # map port 5000 ของ container ไปยัง 5001 ของ host(external port)
+    expose:
+      - "5000" # เปิด port 5000 ให้ service อื่นใน network เข้าถึงได้
+    environment:
+      - DEBUG=false # environment variables กำหนดใน container
+      - MONGO_URL=mongodb://mongo:27017/mydb
+    env_file:
+      - ./app.env # โหลด env vars จากไฟล์
+    volumes:
+      - app-data:/app/data # ใช้ named volume ผูกกับ path ใน container
+      - ./app/config:/app/config # ผูกโฟลเดอร์ config จาก host ไป container (bind mount)
+    depends_on:
+      - mongo # รัน service นี้หลัง mongo เรียบร้อยแล้ว
+    restart: always # นโยบาย restart container
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"] # ตรวจสุขภาพ container
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - backend-net # เชื่อมต่อ network backend-net
+
+  mongo: # ชื่อ service
+    image: mongo:5.0 # ใช้ image mongo version 5.0 จาก Docker Hub
+    ports:
+      - "27017:27017" # แมป port MongoDB default ไป host
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin # กำหนด user และ password สำหรับ mongo
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    volumes:
+      - mongo-data:/data/db # ใช้ named volume สำหรับเก็บข้อมูล persist
+    restart: unless-stopped # นโยบาย restart ยกเว้นตอนหยุดด้วยคำสั่ง manual
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"] # เช็คสถานะ MongoDB
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend-net # เชื่อมต่อ network backend-net
+
+volumes:
+  app-data: # ประกาศ named volume สำหรับ app
+  mongo-data: # ประกาศ named volume สำหรับ mongo
+
+networks:
+  backend-net: # ประกาศ network backend-net เพื่อเชื่อม service ทั้งสอง
